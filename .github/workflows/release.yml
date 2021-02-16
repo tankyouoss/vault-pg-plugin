@@ -1,0 +1,34 @@
+---
+name: Publish
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            arch: amd64
+          - os: linux
+            arch: arm64
+          - os: darwin
+            arch: amd64
+          - os: windows
+            arch: amd64
+    name: Release for ${{ matrix.os }}/${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: wangyoucao577/go-release-action@v1.14
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.os }}
+          goarch: ${{ matrix.arch }}
+          goversion: 1.15
+          sha256sum: true
+          md5sum: false
+          project_path: "./postgresql-database-plugin"
+          binary_name: pg-database-plugin
